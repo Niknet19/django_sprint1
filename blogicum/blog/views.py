@@ -45,6 +45,9 @@ posts = [
 ]
 
 
+posts_by_id = {post['id']: post for post in posts}
+
+
 def index(request):
     template = 'blog/index.html'
     context = {'posts': posts[::-1]}
@@ -54,12 +57,20 @@ def index(request):
 def post_detail(request, id):
     template = 'blog/detail.html'
 
-    post = next((post for post in posts if post['id'] == id), None)
-    
-    if post is not None:
-        return render(request, template, {'post': post})
-    else:
+    try:
+        id = int(id)
+    except (ValueError, TypeError):
+        raise Http404('Некорректный идентификатор поста')
+
+    if id not in posts_by_id:
         raise Http404('Страница не найдена')
+
+
+    post = posts_by_id[id]
+
+
+    return render(request, template, {'post': post})
+
 
 
 
