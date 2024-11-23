@@ -52,12 +52,15 @@ def index(request):
 
 
 def post_detail(request, id):
-
     template = 'blog/detail.html'
-    try:
-        return render(request, template, {'post': posts[id]})
-    except IndexError:
+
+    post = next((post for post in posts if post['id'] == id), None)
+    
+    if post is not None:
+        return render(request, template, {'post': post})
+    else:
         raise Http404('Страница не найдена')
+
 
 
 def category_posts(request, category_slug):
